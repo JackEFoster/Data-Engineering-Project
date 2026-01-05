@@ -60,6 +60,7 @@ CREATE OR REPLACE STAGE my_s3_stage STORAGE_INTEGRATION = integration_of_surveys
 LIST @customer_surveys.raw_data.my_s3_stage;
 LIST @my_s3_stage;
 LIST @customer_surveys.raw_data.my_s3_stage;
+-- Preview Weightlifting survey data only (exclude Smartbox files)
 SELECT
     $1,
     $2,
@@ -68,7 +69,8 @@ SELECT
     $5
 FROM
     @customer_surveys.raw_data.my_s3_stage (
-        FILE_FORMAT => customer_surveys.raw_data.survey_csv_format
+        FILE_FORMAT => customer_surveys.raw_data.survey_csv_format,
+        PATTERN => '.*[Ww]eightlifting.*\\.csv'  -- Only read Weightlifting files, exclude Smartbox
     )
 LIMIT
     10;
@@ -91,7 +93,15 @@ CREATE TABLE customer_surveys.raw_data.PAK_survey_data (
     );
 COPY INTO customer_surveys.raw_data.PAK_survey_data
 FROM
-    @my_s3_stage PATTERN = '.*Weightlifting.*.csv';
+    @my_s3_stage 
+    -- Only load Weightlifting survey files - explicitly exclude Smartbox
+    -- Pattern requires "Weightlifting" (case-insensitive) and excludes "Smartbox"
+    PATTERN = '.*[Ww]eightlifting.*\\.csv';
+    -- This pattern will match files with "Weightlifting" or "weightlifting" in the name
+    -- It will NOT match "Smartbox Survey.csv" since that doesn't contain "Weightlifting"
+    -- 
+    -- Alternative: If you know the exact filename(s), replace PATTERN with:
+    -- FILES = ('Weightlifting_Survey.csv')  -- list exact filename(s)
 DESCRIBE TABLE customer_surveys.raw_data.PAK_survey_data;
 CREATE SCHEMA IF NOT EXISTS customer_surveys.cleaned;
 USE SCHEMA customer_surveys.cleaned;
