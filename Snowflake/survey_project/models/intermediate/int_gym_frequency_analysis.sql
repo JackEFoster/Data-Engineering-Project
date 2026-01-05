@@ -10,6 +10,9 @@
 -- Calculates frequency gap metrics
 
 SELECT
+    survey_date,
+    experience,
+    response_id,
     min_days_curr,
     max_days_curr,
     min_days_id,

@@ -90,4 +90,3 @@ SELECT
     *
 FROM enriched
 ORDER BY survey_datetime
-

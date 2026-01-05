@@ -57,5 +57,11 @@ categorized AS (
 )
 
 SELECT
-    *
+    *,
+    COALESCE(
+        exact_category,
+        pattern_category,
+        fallback_category,
+        'other'
+    ) AS competitive_category
 FROM categorized
