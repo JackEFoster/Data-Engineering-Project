@@ -95,10 +95,11 @@ FROM
 DESCRIBE TABLE customer_surveys.raw_data.PAK_survey_data;
 CREATE SCHEMA IF NOT EXISTS customer_surveys.cleaned;
 USE SCHEMA customer_surveys.cleaned;
--- Create cleaned weightlifting survey table
-    DROP TABLE IF EXISTS customer_surveys.cleaned.PAK_survey_cleaned;
-CREATE
-    OR REPLACE TABLE customer_surveys.cleaned.PAK_survey_cleaned CLONE customer_surveys.raw_data.PAK_survey_data;
+-- Create cleaned weightlifting survey table for manual processing/checking
+-- NOTE: This is a working copy - raw_data.PAK_survey_data stays UNTOUCHED for dbt
+-- dbt will read directly from raw_data.PAK_survey_data with all original columns
+DROP TABLE IF EXISTS customer_surveys.cleaned.PAK_survey_cleaned;
+CREATE OR REPLACE TABLE customer_surveys.cleaned.PAK_survey_cleaned CLONE customer_surveys.raw_data.PAK_survey_data;
 SELECT
     TOP 15 *
 FROM
@@ -281,29 +282,18 @@ FROM
 ORDER BY
     response_id ASC;
     //competetive
-    //swap before continuing
-ALTER TABLE
-    customer_surveys.raw_data.PAK_survey_data SWAP WITH customer_surveys.cleaned.PAK_survey_cleaned;
-SELECT
-    TOP 15 *
-FROM
-    customer_surveys.raw_data.PAK_survey_data
-ORDER BY
-    response_id ASC;
-ALTER TABLE
-    customer_surveys.raw_data.PAK_survey_data DROP COLUMN current_gym_frequency,
-    ideal_gym_frequency,
-    motivations;
-ALTER TABLE
-    customer_surveys.raw_data.PAK_survey_data DROP COLUMN stats;
-CREATE
-    OR REPLACE TABLE customer_surveys.cleaned.PAK_survey_cleaned CLONE customer_surveys.raw_data.PAK_survey_data;
-SELECT
-    TOP 15 *
-FROM
-    customer_surveys.cleaned.PAK_survey_cleaned
-ORDER BY
-    response_id ASC;
+    //NOTE: Keeping raw_data.PAK_survey_data UNTOUCHED for dbt
+    //The raw table will remain in its original state with all columns intact
+    //dbt will read from raw_data.PAK_survey_data and do all transformations
+    -- 
+    -- For manual processing/checking, continue working with cleaned.PAK_survey_cleaned
+    -- DO NOT SWAP or DROP columns from raw_data.PAK_survey_data
+    --
+    -- If you need to drop columns for manual processing, do it on the cleaned table:
+    -- ALTER TABLE customer_surveys.cleaned.PAK_survey_cleaned DROP COLUMN current_gym_frequency, ideal_gym_frequency, motivations, stats;
+    
+    -- View the cleaned table (for manual checks)
+    SELECT TOP 15 * FROM customer_surveys.cleaned.PAK_survey_cleaned ORDER BY response_id ASC;
 ALTER TABLE
     customer_surveys.cleaned.PAK_survey_cleaned
 ADD

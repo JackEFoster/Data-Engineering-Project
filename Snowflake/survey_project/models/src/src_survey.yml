@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: survey_source
+    database: CUSTOMER_SURVEYS
+    schema: RAW_DATA
+    tables:
+      - name: PAK_SURVEY_DATA
