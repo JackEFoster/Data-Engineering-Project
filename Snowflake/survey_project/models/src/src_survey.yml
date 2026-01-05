@@ -6,3 +6,8 @@ sources:
     schema: RAW_DATA
     tables:
       - name: PAK_SURVEY_DATA
+  - name: customer_surveys
+    database: CUSTOMER_SURVEYS
+    schema: CLEANED
+    tables:
+      - name: PAK_survey_cleaned

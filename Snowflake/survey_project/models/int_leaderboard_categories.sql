@@ -22,8 +22,7 @@ dim_leader_map as (
         ('not', 'no'),
         ('depends', 'conditional'),
         ('option', 'conditional'),
-        ('compete', 'conditional'),
-        ('leaderboard', 'conditional'),
+        ('if', 'conditional'),
         ('*', 'other')
     ) as t(raw_value, category)
 ),
@@ -56,8 +55,7 @@ categorized as (
             'not',
             'depends',
             'option',
-            'compete',
-            'leaderboard'
+            'if'
         )
     left join dim_leader_map f
         on f.raw_value = '*'
